@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import MyContext from '../context/MyContext';
 
 function Search() {
-  const { filter: { filterByName: { name } }, handleChange } = useContext(MyContext);
+  const { filterName: { filterByName: { name } }, handleChange } = useContext(MyContext);
   return (
     <div>
       <input

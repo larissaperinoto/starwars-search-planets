@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 function Table({ planetsList }) {
   return (
     <div>
-      <h1>hello world</h1>
       <table>
         <thead>
           <tr>
@@ -24,7 +23,7 @@ function Table({ planetsList }) {
           </tr>
         </thead>
         <tbody>
-          { planetsList && planetsList.map((planet, index) => (
+          { planetsList.map((planet, index) => (
             <tr key={ index }>
               <td>{planet.name}</td>
               <td>{planet.rotation_period}</td>
@@ -34,8 +33,8 @@ function Table({ planetsList }) {
               <td>{planet.gravity}</td>
               <td>{planet.terrain}</td>
               <td>{planet.surface_water}</td>
-              <td>{planet.films}</td>
               <td>{planet.population}</td>
+              <td>{planet.films}</td>
               <td>{planet.created}</td>
               <td>{planet.edited}</td>
               <td>{planet.url}</td>
