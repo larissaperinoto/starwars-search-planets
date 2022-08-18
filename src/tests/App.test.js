@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import MyProvider from '../context/MyProvider';
 import mockData from './helpers/mockData';
 import App from '../App';
@@ -48,5 +49,37 @@ describe('Verifica a renderização da página', () => {
     expect(screen.getByRole("columnheader", { name: /created/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /edited/i })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: /url/i })).toBeInTheDocument();
+  });
+
+  test('Verifica se todos os itens da tabela são renderizados quando não há filtros', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(screen.getAllByTestId("planet-name").length).toBe(10);
+  });
+
+  test('Verifica se o input de busca textual está funcionando corretamente', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(screen.getAllByTestId("planet-name").length).toBe(10);
+
+    userEvent.type(screen.getByRole("textbox"), 'oo');
+    expect(screen.getAllByTestId("planet-name").length).toBe(2);
+  });
+
+  test('Verifica se os inputs de filtro estão funcionando corretamente', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(screen.getAllByTestId("planet-name").length).toBe(10);
+
+    userEvent.selectOptions(screen.getByTestId("column-filter"), ['surface_water']);
+    userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['igual a'] );
+    userEvent.type(screen.getByRole("spinbutton"), '8');
+    fireEvent.click(screen.getByRole("button", { name: /filter/i }));
+
+    expect(screen.getByRole("heading", { name: /filtrando por:/i })).toBeInTheDocument();
+    expect(screen.getByText("surface_water igual a 8")).toBeInTheDocument();
   });
 });

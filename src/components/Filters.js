@@ -1,9 +1,12 @@
 import React, { useContext } from 'react';
 import MyContext from '../context/MyContext';
+import initialColumnData from '../services/columnData';
 
 function Filters() {
   const { handleNumericFilters,
     numericFilters: { value },
+    clickToOrderList,
+    handleOrderChange,
     clickToFilter,
     clickToDeleteAllFilters,
     colunmData } = useContext(MyContext);
@@ -17,7 +20,7 @@ function Filters() {
       >
         { colunmData
           .map((item, i) => (
-            <option key={ i }>{ item }</option>
+            <option key={ i } value={ item }>{ item }</option>
           ))}
       </select>
 
@@ -26,9 +29,9 @@ function Filters() {
         name="comparison"
         onChange={ handleNumericFilters }
       >
-        <option>maior que</option>
-        <option>menor que</option>
-        <option>igual a</option>
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
       </select>
 
       <input
@@ -52,6 +55,47 @@ function Filters() {
         onClick={ clickToDeleteAllFilters }
       >
         Remover todas filtragens
+      </button>
+
+      <select
+        data-testid="column-sort"
+        name="column"
+        onChange={ handleOrderChange }
+      >
+        { initialColumnData.map((item, i) => (
+          <option key={ i }>{item}</option>
+        ))}
+      </select>
+
+      <label htmlFor="column-sort-input-asc">
+        Ascendente
+        <input
+          type="radio"
+          id="column-sort-input-asc"
+          data-testid="column-sort-input-asc"
+          name="sort"
+          value="ASC"
+          onChange={ handleOrderChange }
+        />
+      </label>
+      <label htmlFor="column-sort-input-asc">
+        Descendente
+        <input
+          type="radio"
+          id="column-sort-input-desc"
+          data-testid="column-sort-input-desc"
+          value="DESC"
+          name="sort"
+          onChange={ handleOrderChange }
+        />
+      </label>
+
+      <button
+        type="button"
+        data-testid="column-sort-button"
+        onClick={ clickToOrderList }
+      >
+        Ordenar
       </button>
     </form>
   );

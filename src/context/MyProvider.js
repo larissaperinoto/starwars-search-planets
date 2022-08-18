@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import initialColumnData from '../services/columnData';
 import MyContext from './MyContext';
 
 function MyProvider({ children }) {
+  const [planetsList, setPlanetsList] = useState([]);
+
+  const [action, setAction] = useState('');
+
+  const [originalData, setOriginalData] = useState([]);
+
   const [filterName, setFilterName] = useState({
     filterByName: {
       name: '',
@@ -18,22 +25,11 @@ function MyProvider({ children }) {
     filterByNumericValues: [],
   });
 
-  const [planetsList, setPlanetsList] = useState([]);
-  const [originalData, setOriginalData] = useState([]);
-
-  const initialColumnData = [
-    'population',
-    'orbital_period',
-    'diameter',
-    'rotation_period',
-    'surface_water',
-  ];
+  const [order, setOrder] = useState({ column: 'population', sort: 'ASC' });
 
   const [colunmData, setColunmData] = useState(initialColumnData);
 
   const getNewColunmData = () => {
-    console.log('select');
-    console.log(allFilters);
     const selected = allFilters.filterByNumericValues.map((obj) => obj.column);
     const newColumnData = colunmData.filter((item) => !selected.includes(item));
     setColunmData(newColumnData);
@@ -43,6 +39,7 @@ function MyProvider({ children }) {
     setAllFilters({
       filterByNumericValues: [...allFilters.filterByNumericValues, numericFilters],
     });
+    setAction('filtrar');
   };
 
   const handleChange = ({ target: { value } }) => {
@@ -59,15 +56,20 @@ function MyProvider({ children }) {
     });
   };
 
-  const handleFilterList = () => {
+  const handleFilterList = (list) => {
+    console.log('filtrou');
+    console.log(list);
     const { filterByNumericValues } = allFilters;
+    console.log(filterByNumericValues);
     filterByNumericValues.forEach(({ comparison, column, value }) => {
-      const newResult = planetsList.filter((obj) => {
+      const newResult = list.filter((obj) => {
+        console.log(column, comparison, value);
         if (comparison === 'maior que') return obj[column] > Number(value);
         if (comparison === 'menor que') return obj[column] < Number(value);
         if (comparison === 'igual a') return obj[column] === value;
-        return planetsList;
+        return list;
       });
+      console.log(newResult);
       setPlanetsList(newResult);
     });
     getNewColunmData();
@@ -79,13 +81,42 @@ function MyProvider({ children }) {
     setAllFilters({
       filterByNumericValues: [...newAllFilters],
     });
-    handleFilterList();
+    setAction('deletar');
   };
 
   const clickToDeleteAllFilters = () => {
     setAllFilters({
       filterByNumericValues: [],
     });
+  };
+
+  const handleOrderChange = ({ target: { name, value } }) => {
+    setOrder({ ...order, [name]: value });
+  };
+
+  const clickToOrderList = () => {
+    // const { sort, column } = order;
+
+    /* console.log(sort, column);
+    if (sort === 'ASC') {
+      const ascPlanetsList = planetsList.sort((a, b) => {
+        if (Number(a[column]) < Number(b[column])) return -1;
+        if (Number(a[column]) > Number(b[column])) return 1;
+        if (a[column] === 'unknow') return -1;
+        return 0;
+      });
+      setPlanetsList(ascPlanetsList);
+    }
+
+    if (sort === 'DESC') {
+      const ascPlanetsList = planetsList.sort((a, b) => {
+        if (Number(a[column]) > Number(b[column])) return -1;
+        if (Number(a[column]) < Number(b[column])) return 1;
+        if (a[column] === 'unknow') return -1;
+        return 0;
+      });
+      setPlanetsList(ascPlanetsList);
+    } */
   };
 
   return (
@@ -105,7 +136,10 @@ function MyProvider({ children }) {
         clickToDeleteAllFilters,
         setPlanetsList,
         originalData,
-        getNewColunmData } }
+        getNewColunmData,
+        handleOrderChange,
+        clickToOrderList,
+        action } }
     >
       {children}
     </MyContext.Provider>

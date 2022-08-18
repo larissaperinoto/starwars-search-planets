@@ -3,13 +3,13 @@ import requestAPI from './services/resquestAPI';
 import Search from './components/Search';
 import Table from './components/Table';
 import Filters from './components/Filters';
-import Header from './components/Header';
 import MyContext from './context/MyContext';
 
 function App() {
   const {
     setOriginalData,
     handleFilterList,
+    action,
     planetsList,
     clickToDeleteFilter,
     setPlanetsList,
@@ -27,9 +27,12 @@ function App() {
     getPlanets();
   }, []);
 
+  console.log(filterByNumericValues.length);
+
   useEffect(() => {
     if (filterByNumericValues.length > 0) {
-      handleFilterList();
+      if (action === 'filtrar') handleFilterList(planetsList);
+      if (action === 'deletar') handleFilterList(originalData);
     } else {
       setPlanetsList(originalData);
     }
@@ -38,7 +41,6 @@ function App() {
 
   return (
     <>
-      <Header />
       <Search />
       <Filters />
       <div>
@@ -46,11 +48,10 @@ function App() {
         <ul>
           { filterByNumericValues.length > 0
             && filterByNumericValues.map((item, i) => (
-              <li key={ i }>
+              <li key={ i } data-testid="filter">
                 <p>{`${item.column} ${item.comparison}  ${item.value}`}</p>
                 <button
                   type="button"
-                  data-testid="filter"
                   onClick={ () => clickToDeleteFilter(item) }
                 >
                   X
