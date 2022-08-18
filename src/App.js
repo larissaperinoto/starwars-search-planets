@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from 'react';
+import requestAPI from './services/resquestAPI';
 import Search from './components/Search';
 import Table from './components/Table';
 import Filters from './components/Filters';
@@ -7,28 +8,32 @@ import MyContext from './context/MyContext';
 
 function App() {
   const {
-    getPlanetsList,
+    setOriginalData,
     handleFilterList,
     planetsList,
+    clickToDeleteFilter,
+    setPlanetsList,
+    originalData,
+    getNewColunmData,
     allFilters: { filterByNumericValues },
     filterName: { filterByName: { name: contextName } } } = useContext(MyContext);
 
-  const endpoint = 'https://swapi-trybe.herokuapp.com/api/planets/';
-
   useEffect(() => {
     const getPlanets = async () => {
-      const { results } = await fetch(endpoint).then((response) => response.json());
-      results.forEach((key) => delete key.residents);
-      getPlanetsList(results);
+      const data = await requestAPI();
+      setOriginalData(data);
+      setPlanetsList(data);
     };
     getPlanets();
   }, []);
 
   useEffect(() => {
-    console.log('atualiza');
     if (filterByNumericValues.length > 0) {
       handleFilterList();
+    } else {
+      setPlanetsList(originalData);
     }
+    getNewColunmData();
   }, [filterByNumericValues]);
 
   return (
@@ -46,6 +51,7 @@ function App() {
                 <button
                   type="button"
                   data-testid="filter"
+                  onClick={ () => clickToDeleteFilter(item) }
                 >
                   X
                 </button>

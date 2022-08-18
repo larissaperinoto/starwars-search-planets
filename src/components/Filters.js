@@ -5,6 +5,7 @@ function Filters() {
   const { handleNumericFilters,
     numericFilters: { value },
     clickToFilter,
+    clickToDeleteAllFilters,
     colunmData } = useContext(MyContext);
 
   return (
@@ -48,6 +49,7 @@ function Filters() {
       <button
         type="button"
         data-testid="button-remove-filters"
+        onClick={ clickToDeleteAllFilters }
       >
         Remover todas filtragens
       </button>

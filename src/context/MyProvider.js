@@ -19,6 +19,7 @@ function MyProvider({ children }) {
   });
 
   const [planetsList, setPlanetsList] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
 
   const initialColumnData = [
     'population',
@@ -30,11 +31,9 @@ function MyProvider({ children }) {
 
   const [colunmData, setColunmData] = useState(initialColumnData);
 
-  const getPlanetsList = (planets) => {
-    setPlanetsList(planets);
-  };
-
   const getNewColunmData = () => {
+    console.log('select');
+    console.log(allFilters);
     const selected = allFilters.filterByNumericValues.map((obj) => obj.column);
     const newColumnData = colunmData.filter((item) => !selected.includes(item));
     setColunmData(newColumnData);
@@ -61,7 +60,6 @@ function MyProvider({ children }) {
   };
 
   const handleFilterList = () => {
-    console.log('filtrou');
     const { filterByNumericValues } = allFilters;
     filterByNumericValues.forEach(({ comparison, column, value }) => {
       const newResult = planetsList.filter((obj) => {
@@ -70,9 +68,24 @@ function MyProvider({ children }) {
         if (comparison === 'igual a') return obj[column] === value;
         return planetsList;
       });
-      getPlanetsList(newResult);
+      setPlanetsList(newResult);
     });
     getNewColunmData();
+  };
+
+  const clickToDeleteFilter = (filterObj) => {
+    const newAllFilters = allFilters.filterByNumericValues
+      .filter((obj) => obj !== filterObj);
+    setAllFilters({
+      filterByNumericValues: [...newAllFilters],
+    });
+    handleFilterList();
+  };
+
+  const clickToDeleteAllFilters = () => {
+    setAllFilters({
+      filterByNumericValues: [],
+    });
   };
 
   return (
@@ -85,9 +98,14 @@ function MyProvider({ children }) {
         handleFilterList,
         clickToFilter,
         planetsList,
-        getPlanetsList,
+        setOriginalData,
         allFilters,
-        colunmData } }
+        colunmData,
+        clickToDeleteFilter,
+        clickToDeleteAllFilters,
+        setPlanetsList,
+        originalData,
+        getNewColunmData } }
     >
       {children}
     </MyContext.Provider>
