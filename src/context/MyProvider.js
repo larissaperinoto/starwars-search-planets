@@ -9,16 +9,14 @@ function MyProvider({ children }) {
     } });
 
   const [numericFilters, setNumericFilters] = useState({
-    filterByNumericValues: [
-      {
-        column: 'population',
-        comparison: 'maior que',
-        value: 0,
-      },
-    ],
+    column: 'population',
+    comparison: 'maior que',
+    value: 0,
   });
 
-  const [filter, setFilter] = useState(false);
+  const [allFilters, setAllFilters] = useState({
+    filterByNumericValues: [],
+  });
 
   const [planetsList, setPlanetsList] = useState([]);
 
@@ -27,7 +25,9 @@ function MyProvider({ children }) {
   };
 
   const applyFilters = () => {
-    setFilter(!filter);
+    setAllFilters({
+      filterByNumericValues: [...allFilters.filterByNumericValues, numericFilters],
+    });
   };
 
   const handleChange = ({ target: { value } }) => {
@@ -39,12 +39,8 @@ function MyProvider({ children }) {
 
   const handleNumericFilters = ({ target: { name, value } }) => {
     setNumericFilters({
-      filterByNumericValues: [
-        {
-          ...numericFilters.filterByNumericValues[0],
-          [name]: value,
-        },
-      ],
+      ...numericFilters,
+      [name]: value,
     });
   };
 
@@ -56,9 +52,9 @@ function MyProvider({ children }) {
         numericFilters,
         handleNumericFilters,
         applyFilters,
-        filter,
         planetsList,
-        getPlanetsList } }
+        getPlanetsList,
+        allFilters } }
     >
       {children}
     </MyContext.Provider>

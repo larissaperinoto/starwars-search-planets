@@ -9,8 +9,7 @@ function App() {
   const {
     getPlanetsList,
     planetsList,
-    filter,
-    numericFilters,
+    allFilters: { filterByNumericValues },
     filterName: { filterByName: { name: contextName } } } = useContext(MyContext);
 
   const endpoint = 'https://swapi-trybe.herokuapp.com/api/planets/';
@@ -19,33 +18,33 @@ function App() {
     const getPlanets = async () => {
       const { results } = await fetch(endpoint).then((response) => response.json());
       results.forEach((key) => delete key.residents);
-      console.log(results);
       getPlanetsList(results);
     };
     getPlanets();
   }, []);
 
   useEffect(() => {
-    if (filter) {
-      console.log('filtra');
-      const { comparison, value, column } = numericFilters.filterByNumericValues[0];
-      const newResult = planetsList.filter((obj) => {
-        let result = '';
-        if (comparison === 'maior que') {
-          result = obj[column] > Number(value);
-        }
-        if (comparison === 'menor que') {
-          result = obj[column] < Number(value);
-        }
+    if (filterByNumericValues.length > 0) {
+      let newResult = '';
+      filterByNumericValues.forEach(({ comparison, column, value }) => {
+        newResult = planetsList.filter((obj) => {
+          let result = '';
+          if (comparison === 'maior que') {
+            result = obj[column] > Number(value);
+          }
+          if (comparison === 'menor que') {
+            result = obj[column] < Number(value);
+          }
 
-        if (comparison === 'igual a') {
-          result = obj[column] === value;
-        }
-        return result;
+          if (comparison === 'igual a') {
+            result = obj[column] === value;
+          }
+          return result;
+        });
       });
       getPlanetsList(newResult);
     }
-  }, [filter]);
+  }, [filterByNumericValues]);
 
   return (
     <>

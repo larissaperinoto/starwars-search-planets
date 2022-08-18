@@ -5,7 +5,9 @@ function Filters() {
   const { handleNumericFilters,
     numericFilters,
     applyFilters } = useContext(MyContext);
-  const inputValue = numericFilters.filterByNumericValues[0].value;
+
+  const inputValue = numericFilters.value;
+
   return (
     <form>
       <select
