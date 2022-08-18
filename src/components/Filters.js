@@ -3,10 +3,9 @@ import MyContext from '../context/MyContext';
 
 function Filters() {
   const { handleNumericFilters,
-    numericFilters,
-    applyFilters } = useContext(MyContext);
-
-  const inputValue = numericFilters.value;
+    numericFilters: { value },
+    clickToFilter,
+    colunmData } = useContext(MyContext);
 
   return (
     <form>
@@ -15,11 +14,10 @@ function Filters() {
         name="column"
         onChange={ handleNumericFilters }
       >
-        <option>population</option>
-        <option>orbital_period</option>
-        <option>diameter</option>
-        <option>rotation_period</option>
-        <option>surface_water</option>
+        { colunmData
+          .map((item, i) => (
+            <option key={ i }>{ item }</option>
+          ))}
       </select>
 
       <select
@@ -36,15 +34,22 @@ function Filters() {
         type="number"
         data-testid="value-filter"
         name="value"
-        value={ inputValue }
+        value={ value }
         onChange={ handleNumericFilters }
       />
       <button
         type="button"
         data-testid="button-filter"
-        onClick={ applyFilters }
+        onClick={ clickToFilter }
       >
         Filter
+      </button>
+
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+      >
+        Remover todas filtragens
       </button>
     </form>
   );
