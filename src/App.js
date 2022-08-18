@@ -8,6 +8,7 @@ import MyContext from './context/MyContext';
 function App() {
   const {
     getPlanetsList,
+    handleFilterList,
     planetsList,
     allFilters: { filterByNumericValues },
     filterName: { filterByName: { name: contextName } } } = useContext(MyContext);
@@ -24,25 +25,9 @@ function App() {
   }, []);
 
   useEffect(() => {
+    console.log('atualiza');
     if (filterByNumericValues.length > 0) {
-      let newResult = '';
-      filterByNumericValues.forEach(({ comparison, column, value }) => {
-        newResult = planetsList.filter((obj) => {
-          let result = '';
-          if (comparison === 'maior que') {
-            result = obj[column] > Number(value);
-          }
-          if (comparison === 'menor que') {
-            result = obj[column] < Number(value);
-          }
-
-          if (comparison === 'igual a') {
-            result = obj[column] === value;
-          }
-          return result;
-        });
-      });
-      getPlanetsList(newResult);
+      handleFilterList();
     }
   }, [filterByNumericValues]);
 
@@ -51,6 +36,23 @@ function App() {
       <Header />
       <Search />
       <Filters />
+      <div>
+        { filterByNumericValues.length > 0 && <h3>Filtrando por:</h3> }
+        <ul>
+          { filterByNumericValues.length > 0
+            && filterByNumericValues.map((item, i) => (
+              <li key={ i }>
+                <p>{`${item.column} ${item.comparison}  ${item.value}`}</p>
+                <button
+                  type="button"
+                  data-testid="filter"
+                >
+                  X
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
       <Table
         planetsList={ contextName
           ? planetsList.filter((obj) => obj.name.includes(contextName)) : planetsList }
