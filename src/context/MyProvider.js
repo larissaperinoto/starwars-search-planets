@@ -10,6 +10,8 @@ function MyProvider({ children }) {
 
   const [originalData, setOriginalData] = useState([]);
 
+  const [orderList, setOrderList] = useState([]);
+
   const [filterName, setFilterName] = useState({
     filterByName: {
       name: '',
@@ -24,8 +26,6 @@ function MyProvider({ children }) {
   const [allFilters, setAllFilters] = useState({
     filterByNumericValues: [],
   });
-
-  const [order, setOrder] = useState({ column: 'population', sort: 'ASC' });
 
   const [colunmData, setColunmData] = useState(initialColumnData);
 
@@ -57,19 +57,14 @@ function MyProvider({ children }) {
   };
 
   const handleFilterList = (list) => {
-    console.log('filtrou');
-    console.log(list);
     const { filterByNumericValues } = allFilters;
-    console.log(filterByNumericValues);
     filterByNumericValues.forEach(({ comparison, column, value }) => {
       const newResult = list.filter((obj) => {
-        console.log(column, comparison, value);
         if (comparison === 'maior que') return obj[column] > Number(value);
         if (comparison === 'menor que') return obj[column] < Number(value);
         if (comparison === 'igual a') return obj[column] === value;
         return list;
       });
-      console.log(newResult);
       setPlanetsList(newResult);
     });
     getNewColunmData();
@@ -90,34 +85,45 @@ function MyProvider({ children }) {
     });
   };
 
+  const [order, setOrder] = useState({ column: 'population', sort: 'ASC' });
+
   const handleOrderChange = ({ target: { name, value } }) => {
     setOrder({ ...order, [name]: value });
   };
 
-  const clickToOrderList = () => {
-    // const { sort, column } = order;
-
-    /* console.log(sort, column);
-    if (sort === 'ASC') {
-      const ascPlanetsList = planetsList.sort((a, b) => {
-        if (Number(a[column]) < Number(b[column])) return -1;
-        if (Number(a[column]) > Number(b[column])) return 1;
-        if (a[column] === 'unknow') return -1;
-        return 0;
-      });
-      setPlanetsList(ascPlanetsList);
-    }
-
-    if (sort === 'DESC') {
-      const ascPlanetsList = planetsList.sort((a, b) => {
-        if (Number(a[column]) > Number(b[column])) return -1;
-        if (Number(a[column]) < Number(b[column])) return 1;
-        if (a[column] === 'unknow') return -1;
-        return 0;
-      });
-      setPlanetsList(ascPlanetsList);
-    } */
+  const orderAscendent = ({ column }) => {
+    const menor = -1;
+    const ascPlanetsList = planetsList.sort((a, b) => {
+      if (Number(a[column]) < Number(b[column])) return menor;
+      if (Number(a[column]) > Number(b[column])) return 1;
+      return 0;
+    });
+    console.log('hora de mudar');
+    setOrderList([
+      ...ascPlanetsList.filter((obj) => obj[column] !== 'unknown'),
+      ...ascPlanetsList.filter((obj) => obj[column] === 'unknown'),
+    ]);
   };
+
+  const orderDescentent = () => {
+    setOrderList([
+      ...orderList.filter((obj) => obj[order.column] === 'unknown').reverse(),
+      ...orderList.filter((obj) => obj[order.column] !== 'unknown').reverse(),
+    ]);
+    setAction('lista descendente');
+  };
+
+  const clickToOrderList = () => {
+    setAction('ordenar');
+    if (order.sort === 'ASC') {
+      orderAscendent(order);
+    } else {
+      orderAscendent(order);
+      setAction('DESC');
+    }
+  };
+
+  console.log(planetsList);
 
   return (
     <MyContext.Provider
@@ -138,8 +144,11 @@ function MyProvider({ children }) {
         originalData,
         getNewColunmData,
         handleOrderChange,
+        action,
+        order,
         clickToOrderList,
-        action } }
+        orderList,
+        orderDescentent } }
     >
       {children}
     </MyContext.Provider>
@@ -147,7 +156,7 @@ function MyProvider({ children }) {
 }
 
 MyProvider.propTypes = {
-  children: PropTypes.objectOf().isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default MyProvider;

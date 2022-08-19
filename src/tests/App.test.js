@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MyProvider from '../context/MyProvider';
 import mockData from './helpers/mockData';
@@ -77,9 +77,20 @@ describe('Verifica a renderização da página', () => {
     userEvent.selectOptions(screen.getByTestId("column-filter"), ['surface_water']);
     userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['igual a'] );
     userEvent.type(screen.getByRole("spinbutton"), '8');
-    fireEvent.click(screen.getByRole("button", { name: /filter/i }));
+    userEvent.click(screen.getByRole("button", { name: /filter/i }));
 
     expect(screen.getByRole("heading", { name: /filtrando por:/i })).toBeInTheDocument();
-    expect(screen.getByText("surface_water igual a 8")).toBeInTheDocument();
+    expect(screen.getAllByTestId("filter").length).toBe(1);
+
+    userEvent.selectOptions(screen.getByTestId("column-filter"), ['diameter']);
+    userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['igual a'] );
+    userEvent.type(screen.getByRole("spinbutton"), '8900');
+    userEvent.click(screen.getByRole("button", { name: /filter/i }));
+
+    expect(screen.getAllByTestId("filter").length).toBe(2);
+
+    userEvent.click(screen.getAllByRole("button", { name: /x/i })[1]);
+
+    expect(screen.getAllByTestId("filter").length).toBe(1);
   });
 });
