@@ -8,9 +8,6 @@ import MyContext from './context/MyContext';
 function App() {
   const {
     setOriginalData,
-    orderDescentent,
-    orderList,
-    order,
     handleFilterList,
     action,
     planetsList,
@@ -39,20 +36,6 @@ function App() {
     }
     getNewColunmData();
   }, [filterByNumericValues]);
-
-  useEffect(() => {
-    if (action === 'ordenar') {
-      setPlanetsList(orderList);
-    }
-
-    if (action === 'DESC') {
-      orderDescentent();
-    }
-
-    if (action === 'lista descendente') {
-      setPlanetsList(orderList);
-    }
-  }, [action, order]);
 
   return (
     <>

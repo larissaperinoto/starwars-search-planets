@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MyProvider from '../context/MyProvider';
 import mockData from './helpers/mockData';
@@ -31,6 +31,10 @@ describe('Verifica a renderização da página', () => {
     expect(screen.getByRole("spinbutton")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /filter/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /remover todas filtragens/i })).toBeInTheDocument();
+    expect(screen.getByTestId("column-sort")).toBeInTheDocument();
+    expect(screen.getByText("Ascendente")).toBeInTheDocument();
+    expect(screen.getByText("Descendente")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /ordenar/i })).toBeInTheDocument();
   });
 
   test('Verifica se os títulos da tabela são renderizados', () => {
@@ -92,5 +96,81 @@ describe('Verifica a renderização da página', () => {
     userEvent.click(screen.getAllByRole("button", { name: /x/i })[1]);
 
     expect(screen.getAllByTestId("filter").length).toBe(1);
+  });
+
+  test('Verifica se os inputs de ordenação funcionam corretamente ao selecionar population e ascendente', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+
+    userEvent.selectOptions(screen.getByTestId("column-sort"), 'population');
+    userEvent.click(screen.getByText("Ascendente"));
+    userEvent.click(screen.getByRole("button", { name: /ordenar/i }));
+
+    const ascendentList= ['Yavin IV', 'Tatooine', 'Bespin', 'Endor', 'Kamino', 'Alderaan', 'Naboo', 'Coruscant', 'Dagobah', 'Hoth'];
+
+    ascendentList.forEach((planet, index) => {
+      expect(screen.getAllByTestId("planet-name")[index].innerHTML).toBe(planet);
+    });
+  });
+
+  /* test('Verifica se os inputs de ordenação funcionam corretamente ao selecionar population e descendente', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+
+    userEvent.selectOptions(screen.getByTestId("column-sort"), 'population');
+    userEvent.click(screen.getByText("Descendente"));
+    userEvent.click(screen.getByRole("button", { name: /ordenar/i }));
+
+    const descendentList = ['Coruscant', 'Naboo', 'Alderaan', 'Kamino', 'Endor', 'Bespin', 'Tatooine', 'Yavin IV', 'Dagobah', 'Hoth'];
+
+    descendentList.forEach((planet, index) => {
+      expect(screen.getAllByTestId("planet-name")[index].innerHTML).toBe(planet);
+    });
+  }); */
+
+  test('Verifica se o botão de remover filtros funciona corretamente', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+
+    userEvent.selectOptions(screen.getByTestId("column-filter"), ['diameter']);
+    userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['maior que'] );
+    userEvent.type(screen.getByRole("spinbutton"), '10000');
+    userEvent.click(screen.getByRole("button", { name: /filter/i }));
+
+    expect(screen.getAllByTestId("planet-name").length).toBe(7);
+
+    userEvent.click(screen.getByRole("button", { name: /remover todas filtragens/i }));
+
+    expect(screen.getAllByTestId("planet-name").length).toBe(10);
+  });
+
+  test('Verifica se é possível excluir os filtros um a um', async () => {
+    render(<MyProvider><App /></MyProvider>);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+
+    expect(screen.getByTestId("column-filter").childNodes.length).toBe(5);
+
+    userEvent.selectOptions(screen.getByTestId("column-filter"), ['orbital_period']);
+    userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['menor que'] );
+    userEvent.type(screen.getByRole("spinbutton"), '500');
+    userEvent.click(screen.getByRole("button", { name: /filter/i }));
+
+    expect(screen.getAllByTestId("planet-name").length).toBe(7);
+    expect(screen.getByTestId("column-filter").childNodes.length).toBe(4);
+
+    expect(screen.getByRole("heading", { name: /filtrando por:/i })).toBeInTheDocument();
+    expect(screen.getByText("orbital_period menor que 500")).toBeInTheDocument();
+
+    userEvent.selectOptions(screen.getByTestId("column-filter"), ['rotation_period']);
+    userEvent.selectOptions(screen.getByTestId("comparison-filter"), ['menor que'] );
+    userEvent.type(screen.getByRole("spinbutton"), '20');
+    userEvent.click(screen.getByRole("button", { name: /filter/i }));
+
+   fireEvent.click(await screen.findByRole("button", { name: /x/i }));
+
   });
 });
