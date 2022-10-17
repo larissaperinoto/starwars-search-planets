@@ -11,6 +11,7 @@ function Search() {
         placeholder="Search"
         value={ name }
         onChange={ handleChange }
+        className="input-search"
       />
     </div>
   );

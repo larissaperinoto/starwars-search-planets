@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+  background-color: rgba(177, 91, 5, 0.316);
+}
+
+header {
+  padding: 10% 0 6% 0;
+}
+
+header div {
+  line-height: 0.8;
+  text-align:left;
+  padding: 2% 0 2% 10%;
+  background-color: rgb(159, 227, 90);
+}
+
+header div h1 {
+  font-size: 200px;
+  font-family: 'Bebas Neue', cursive;
+  font-style: italic;
+  color: goldenrod;
+  text-shadow: -6px -5px 2px rgb(90, 93, 83);
+  background-color: transparent;
+}
+
+header div h1 span {
+  padding-left: 1%;
+  font-size: 30px;
+  font-family: 'Signika Negative', sans-serif;
+  color: rgba(85, 40, 31, 0.768);
+  text-shadow: -2px -2px 0px rgb(145, 133, 21);
+  background-color: transparent;
+}
+
+main {
+  display: flex;
+}
+
+.input-search {
+  border: 2px solid rgba(0, 0, 0, 0.517);
+  border-radius: 10px;
+  padding: 0.7% 0;
+  box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.554);
+  background-color: rgba(255, 255, 255, 0.809);
+}
+
+tr {
+  width: 30px;
+}
+
+
