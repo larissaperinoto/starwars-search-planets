@@ -1,8 +1,7 @@
 import React, { useEffect, useContext } from 'react';
+
 import requestAPI from './services/resquestAPI';
-import Search from './components/Search';
-import Table from './components/Table';
-import Filters from './components/Filters';
+import { Header, Search, Filters, Table } from './components';
 import MyContext from './context/MyContext';
 
 function App() {
@@ -39,6 +38,7 @@ function App() {
 
   return (
     <>
+      <Header />
       <Search />
       <Filters />
       <div>
